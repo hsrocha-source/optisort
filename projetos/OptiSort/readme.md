@@ -23,11 +23,11 @@ Atualmente não conseguimos levantar o valor econômico associado ao projeto por
 
 ## Descrição Funcional
 ### Funcionalidades
-O OptiSort, como dito anteriormente, é um sistema de classificação automática para linhas de produção com foco na indústria alimentícia, mas tendo aplicações nas industrias farmacêuticas, automobilísticas e outras. Sua função principal é garantir a qualidade dos produtos através da identificação, classificação e remoção de itens que não atendam aos padrões de qualidade estabelecidos pelo usuario.
+O OptiSort, como dito anteriormente, é um sistema de classificação automática para linhas de produção com foco na indústria alimentícia, mas tendo aplicações nas industrias farmacêuticas, automobilísticas e outras. Sua função principal é garantir a qualidade dos produtos através da identificação, classificação e remoção de itens que não atendam aos padrões de qualidade estabelecidos pelo usuario. O relatório do projeto vai focar no uso de caso para frutas
 
 Ele realiza três grandes tarefas:
-* **Identificação e classificação:** Reconhece diferentes tipos de itens e os separa em categorias, utilizando técnicas de visão computacional e aprendizado de máquina para identificar a qualidade associada a cada item.
-* **Atuação na linha de produção:** Controle de atuadores para remover automaticamente os itens defeituosos da esteira principal, direcionando-os para uma linha secundária para reavaliação ou descarte.
+* **Identificação e classificação:** Reconhece diferentes tipos de itens e os separa em categorias, utilizando técnicas de visão computacional e aprendizado de máquina para identificar a qualidade associada a cada item. Também identifica a posição relativa do item no frame da câmera
+* **Atuação na linha de produção:** Controle de atuadores para remover automaticamente as frutas estragadas da esteira principal, direcionando-as para uma linha secundária para reavaliação ou descarte.
 * **Registro:** Monitora o funcionamento do sistema e armazena os dados de qualidade, quantidade e descarte numa base de dados. 
 
 **Exemplo de aplicação:**  
@@ -46,11 +46,12 @@ Para atingir a flexibilidade desejada deste sistema, o OptiSort conta com divers
 
 #### Parâmetros de Atuação
    - **Velocidade da esteira:** Ajuste da velocidade da esteira de acordo com o fluxo de produção.
-   - **Velocidade do atuador:** Velocidade com que o atuador reage para retirar os itens defeituosos da linha principal.
+   - **Velocidade do atuador:** Velocidade máxima com que o atuador reage para retirar os itens defeituosos da linha principal.
+   - **Aceleração do atuador:** Aceleração com que o atuador vai de velocidade 0 para a velocidade definida. 
    - **Ação do servomotor:** Distância em que o servomotor atua para remover os itens defeituosos da esteira. Pode ser regulada de acordo com os parâmetros da linha de separação.
 
 #### Parâmetros de Registro
-   - **Regularidade do Monitoramento:** Intervalo de tempo entre cada "monitoramento" do estado atual do dispositivo.
+   - **Regularidade do Monitoramento:** Intervalo de tempo entre cada "monitoramento" do estado atual do dispositivo. Depende do tempo de inferência do modelo de aprendizado de máquina e da execução das subrotinas. 
 
 Os parâmetros mais físicos (como sendo os de atuação e alguns de registro) poderão ser configurados de forma dinâmica enquanto a linha de produção está em operação mediante um controlador.
 
@@ -85,13 +86,13 @@ Ao longo da sua operação definem-se vários tipos de "eventos" que descrevem o
     Descrição: _Devido a algum fator externo, como excesso de itens na esteira, o OptiSort não é capaz de remover o item defeituoso a tempo e ele passa para a próxima etapa de produção._
 
 3. **Captação de dados do controlador:**  
-   Descrição: _O sistema detecta que houve uma manipulação ao controlador de configuração._
+   Descrição: _O sistema detecta que houve uma manipulação de configuração no controlador. 
    
 4. **Registro de dados de operação:**  
-   Descrição: _O sistema armazena os dados de operação da esteira numa base de dados._
+   Descrição: _O sistema armazena os dados de operação da esteira numa base de dados.
 
 5. **Atualizações de Software:**  
-    Descrição: _O sistema pode receber atualizações de software para melhorar seu desempenho ou adicionar novas funcionalidades._
+    Descrição: _O sistema pode receber atualizações de software para melhorar seu desempenho ou adicionar novas funcionalidades.
 
 ### Tratamento de Eventos
 Abaixo, detalhamos mais sobre o comportamento do sistema para cada tipo de evento.
@@ -99,7 +100,7 @@ Abaixo, detalhamos mais sobre o comportamento do sistema para cada tipo de event
 #### Eventos Periódicos:
 1. **Aquisição de Imagens:** O sistema captura imagens da esteira transportadora mediante uma câmera ligada ao dispositivo controlador. As imagens são armazenadas em um buffer de memória para serem processadas posteriormente.  
 
-2. **Processamento de Imagens:** O sistema aplica algoritmos de visão computacional e aprendizado de máquina para analisar as imagens e identificar os itens. As características dos itens (por exemplo, cor, tamanho, forma, textura) são extraídas e utilizadas para classificá-los. Mediante os pesos associados a cada item (determinados por prévio treinamento do algoritmo) o dispositivo determina a qualidade dos itens dentro da imagem.  
+2. **Processamento de Imagens:** O sistema aplica algoritmos de visão computacional e aprendizado de máquina para analisar as imagens e identificar os itens. Mediante os pesos treinados associados a cada item (determinados por prévio treinamento do algoritmo) o dispositivo determina a qualidade dos itens dentro da imagem e retorna a probabilidade de eles estarem estragados e a posição dele no frame relativo ao centro da imagem.  
 
 3. **Monitoramento do Sistema:** O sistema monitora alguns parâmetros, como temperatura, humidade, vibração e consumo de energia. Se um parâmetro estiver fora da faixa normal, o sistema gera um alarme para alertar o operador.  
 
